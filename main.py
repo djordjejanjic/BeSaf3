@@ -15,7 +15,7 @@ car_width_global = 0
 signal = 0
 previous = None
 
-stream = FileVideoStream('test-vozilo.mp4').start()
+stream = FileVideoStream('assets/test-vozilo.mp4').start()
 ped = PedestrianDetection()
 
 def startVideo():
@@ -24,11 +24,11 @@ def startVideo():
 
     # cap = cv2.VideoCapture('pedestrian_test.mp4')
 
-    classifier = 'cars.xml'
+    classifier = 'models/cars.xml'
 
-    classifierPedestrian = 'pedestrian.xml'
+    classifierPedestrian = 'models/pedestrian.xml'
 
-    stopSignClassifier = 'stopsign_classifier.xml'
+    stopSignClassifier = 'models/stopsign_classifier.xml'
 
     car_tracker = cv2.CascadeClassifier(classifier)
     pedestrian_tracker = cv2.CascadeClassifier(classifierPedestrian)
@@ -209,12 +209,12 @@ def startVideo():
         # if(suma > 1000):
         #     pedestrians(frame_g, frame)
 
-        ped.pedestrians(pedestrian_tracker, frame_g, frame)
+        # ped.pedestrians(pedestrian_tracker, frame_g, frame)
 
 
         return line_image
 
-    ref_image = cv2.imread("refimage1.png")
+    ref_image = cv2.imread("assets/refimage1.png")
 
     ref_image_car_width = detectCars1(ref_image)
 
