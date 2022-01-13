@@ -5,6 +5,7 @@ import numpy as np
 import operations
 from threading import Thread
 from streamthread import FileVideoStream
+from pedestriandetectionthread import PedestrianDetection
 import time
 from matplotlib import pyplot as plt
 
@@ -15,7 +16,7 @@ signal = 0
 previous = None
 
 stream = FileVideoStream('test-vozilo.mp4').start()
-
+ped = PedestrianDetection()
 
 def startVideo():
     # cap = cv2.VideoCapture('stop_test.mp4')
@@ -207,6 +208,9 @@ def startVideo():
         # 505000
         # if(suma > 1000):
         #     pedestrians(frame_g, frame)
+
+        ped.pedestrians(pedestrian_tracker, frame_g, frame)
+
 
         return line_image
 
