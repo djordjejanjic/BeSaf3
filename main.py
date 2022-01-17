@@ -19,7 +19,7 @@ def startVideo(db):
     pedestrian_tracker = cv2.CascadeClassifier(Globals.classifierPedestrian)
     stop_tracker = cv2.CascadeClassifier(Globals.classifierStopSign)
 
-    ref_image = cv2.imread("assets/refimage1.png")
+    ref_image = cv2.imread(Globals.imagePath)
     ref_image_car_width = StaticCarDetection().detectCarInImg(ref_image, car_tracker)
 
     focal_length_found = focalLength(Globals.know_distance, Globals.know_width, ref_image_car_width)

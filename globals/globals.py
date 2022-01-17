@@ -3,6 +3,7 @@ import cv2
 
 class Globals:
     path = 'assets/test-vozilo.mp4'
+    imagePath = 'assets/refimage1.png'
 
     lineHitCounter = 0
     result = 0
