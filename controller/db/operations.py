@@ -1,11 +1,16 @@
 import pymysql
 import time
 
+flag = False
+
 
 class DBBroker:
 
     def __init__(self):
-        self.conn = pymysql.connect(host="localhost", user="root", passwd="", db="human_driving_res")
+        global flag
+        if flag is False:
+            self.conn = pymysql.connect(host="localhost", user="root", passwd="", db="human_driving_res")
+            flag = True
 
     def insert(self, result):
         now = time.strftime('%Y-%m-%d %H:%M:%S')
@@ -17,6 +22,8 @@ class DBBroker:
 
         self.conn.commit()
         self.conn.close()
+        global flag
+        flag = False
 
     def getAll(self):
         myCursor = self.conn.cursor()
@@ -28,3 +35,6 @@ class DBBroker:
 
         myCursor.execute('DELETE FROM results WHERE id = {0}'.format(id))
         self.conn.commit()
+        self.conn.close()
+        global flag
+        flag = False
