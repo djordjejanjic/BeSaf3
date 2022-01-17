@@ -10,7 +10,7 @@ car_width_global = 0
 signal = 0
 previous = None
 
-cap = cv2.VideoCapture('test-pesak2.mp4')
+cap = cv2.VideoCapture('test-vozilo.mp4')
 
 def start():
 
@@ -58,7 +58,7 @@ def start():
         cv2.fillPoly(mask, vertices, 255)
         masked_image = cv2.bitwise_and(frame_g, mask)
 
-        cars = car_tracker.detectMultiScale(masked_image,minSize=(300,300))
+        cars = car_tracker.detectMultiScale(masked_image,minSize=(50,50))
 
         
         global car_width_global
@@ -102,11 +102,11 @@ def start():
             lineHitCounter= 1
             #signal.signal(lineHitCounter)
             result = result - 8
-            print("BLIZU LINIJE, SMANJUJEMO REZULTAT")
+            # print("BLIZU LINIJE, SMANJUJEMO REZULTAT")
         else:
             lineHitCounter= 0
             #signal.signal(lineHitCounter)
-        print(lineHitCounter)
+        # print(lineHitCounter)
 
         return masked_image
         
@@ -127,7 +127,7 @@ def start():
             for(x,y,w,h) in stop:
                 cv2.rectangle(frame, (x,y), (x+w, y+h), (255, 0, 255), 2)
                 #signal.signal(1)
-                print("ZNAK STOP")
+                # print("ZNAK STOP")
                 global previous
                 if previous is not None:
                     diff = cv2.absdiff(previous, masked_image_stop)
@@ -194,16 +194,16 @@ def start():
         mask1 = lineHit(line_image)
 
         suma = np.sum(mask1)
-        print(suma)
+        # print(suma)
 
         #Detekcija stop znaka 
 
-        stop(frame_g, frame)
+        # stop(frame_g, frame)
 
         #Detekcija pesaka kod zebre
         #505000
         #if(suma > 1000):
-        pedestrians(frame_g, frame)
+        # pedestrians(frame_g, frame)
 
         return line_image
 
@@ -245,7 +245,7 @@ def start():
             global result
             result = result + 25
 
-            print(result)
+            # print(result)
 
             line_frame = lineDetector(frame)
             #lineDetector(frame)
@@ -263,7 +263,7 @@ def start():
                 DistanceInCM = round(Distance)
                 cv2.putText(carDetection, f"Distance: {DistanceInCM} cm", (50,50), fonts,0.6, (255,255,255),2)
                 
-                print("distance", DistanceInCM)
+                # print("distance", DistanceInCM)
                 if(Distance < safe_distance):
                     if(previous_distance != Distance):
                         previous_distance = Distance
@@ -286,7 +286,7 @@ def start():
 
             #cv2.imshow('line_frame', line_frame)
             
-            print("SIGNAL ", signal)
+            # print("SIGNAL ", signal)
             #global signal
             if (signal == 1):
                 #operations.insert(result)
@@ -307,7 +307,7 @@ def start():
 
 def stopAndSave():
     operations.insert(result)
-    print("STOPIRANO")
+    # print("STOPIRANO")
     global signal
     signal = 1
     cap.release()
