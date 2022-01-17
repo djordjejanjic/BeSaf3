@@ -1,15 +1,10 @@
-import cv2
 from flask import Flask, render_template, request
-import cgi, os
-import flask
 from flask.helpers import url_for
-
 from flask.wrappers import Response
 from werkzeug.utils import redirect
 import operations
 import main
 
-# cap = cv2.VideoCapture("videodriving3.mp4")
 app = Flask(__name__)
 
 
@@ -38,12 +33,11 @@ def resultsSorted():
 
 
 def gen():
-    # main.restart()
     return main.startVideo()
 
 
 @app.route('/delete/<string:id>', methods=['POST', 'GET'])
-def delete_result(id):
+def deleteResult(id):
     operations.delete(id)
     return redirect(url_for('results'))
 

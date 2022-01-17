@@ -1,13 +1,9 @@
-import time
-# import signal as signal
 import cv2
 import numpy as np
 import operations
-from threading import Thread
 from streamthread import FileVideoStream
 from pedestriandetectionthread import PedestrianDetection
-import time
-from matplotlib import pyplot as plt
+# import signal as signal
 
 lineHitCounter = 0
 result = 0
@@ -16,23 +12,16 @@ signal = 0
 previous = None
 
 stream = FileVideoStream('assets/test-vozilo.mp4').start()
-# ped = PedestrianDetection()
+
 
 def startVideo():
-    # cap = cv2.VideoCapture('stop_test.mp4')
-    # cap = cv2.VideoCapture('videodriving.mp4')
-
-    # cap = cv2.VideoCapture('pedestrian_test.mp4')
-
-    classifier = 'models/cars.xml'
-
+    classifierCars = 'models/cars.xml'
     classifierPedestrian = 'models/pedestrian.xml'
+    classifierStopSign = 'models/stopsign_classifier.xml'
 
-    stopSignClassifier = 'models/stopsign_classifier.xml'
-
-    car_tracker = cv2.CascadeClassifier(classifier)
+    car_tracker = cv2.CascadeClassifier(classifierCars)
     pedestrian_tracker = cv2.CascadeClassifier(classifierPedestrian)
-    stop_tracker = cv2.CascadeClassifier(stopSignClassifier)
+    stop_tracker = cv2.CascadeClassifier(classifierStopSign)
 
     # Detektuje samo automobile isped i meri distancu
     previous_distance = 0
@@ -51,7 +40,6 @@ def startVideo():
 
     def detectCars(frame):
 
-        car_width = 0
         frame_g = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
 
         # maskiranje
@@ -66,15 +54,11 @@ def startVideo():
         global car_width_global
         for (x, y, w, h) in cars:
             cv2.rectangle(frame, (x, y), (x + w, y + h), (0, 0, 255), 2)
-            # print("ww",w)
-
             car_width_global = w
-
-            # print("cwg",car_width_global)
 
         return frame
 
-    def detectCars1(img):
+    def detectCarInImg(img):
 
         frame_g = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
 
@@ -107,7 +91,6 @@ def startVideo():
         else:
             lineHitCounter = 0
             # signal.signal(lineHitCounter)
-        # print(lineHitCounter)
 
         return masked_image
 
@@ -148,7 +131,6 @@ def startVideo():
         mask = np.zeros_like(frame_g)
         cv2.fillPoly(mask, vertices, 255)
         masked_image = cv2.bitwise_and(frame_g, mask)
-        # cv2.imshow("pesak", masked_image)
         pedestrians = pedestrian_tracker.detectMultiScale(masked_image)
         if pedestrians is not None:
             for (x, y, w, h) in pedestrians:
@@ -212,20 +194,13 @@ def startVideo():
 
         # ped.pedestrians(pedestrian_tracker, frame_g, frame)
 
-
         return line_image
 
     ref_image = cv2.imread("assets/refimage1.png")
-
-    ref_image_car_width = detectCars1(ref_image)
-
-    # cv2.imshow("test",ref_image_car_width)
+    ref_image_car_width = detectCarInImg(ref_image)
 
     focal_length_found = focalLength(know_distance, know_width, ref_image_car_width)
-    # print(focal_length_found[0][0][0])
     foc = focal_length_found[0][0][0]
-
-    # print("FOCAL", foc)
 
     def verify_alpha_channel(frame):
         try:
@@ -251,17 +226,11 @@ def startVideo():
         global result
         result = result + 25
 
-        # print(result)
-
         line_frame = lineDetector(frame)
-        # lineDetector(frame)
-        # carDetector
         carDetection = detectCars(frame)
-        # cv2.imshow("CAR D", carDetection)
+
         carDetectionWidth = car_width_global
 
-        # print("CAR D WIDTH",carDetectionWidth)
-        # overlay = apply_color(carDetection, 0, 0, 0, 0)
         cv2.putText(carDetection, f"Result: {result}", (800, 50), fonts, 1.2, (0, 0, 255), 2)
         if carDetectionWidth != 0:
 
@@ -269,32 +238,28 @@ def startVideo():
             DistanceInCM = round(Distance)
             cv2.putText(carDetection, f"Distance: {DistanceInCM} cm", (50, 50), fonts, 0.6, (255, 255, 255), 2)
 
-            # print("distance", DistanceInCM)
-            if (Distance < safe_distance):
-                if (previous_distance != Distance):
+            if Distance < safe_distance:
+                if previous_distance != Distance:
+
                     previous_distance = Distance
                     cv2.putText(carDetection, "WARNING! SLOW DOWN!", (400, 650), fonts, 1.2, (0, 0, 255), 2)
                     blue = 230
                     intensity = 0.3
                     result = result - 15
-                    # print("BLIZU KOLA, SMANJUJEMO REZULTAT")
                     carDetection = apply_color(carDetection, intensity, blue, 0, 0)
         else:
             cv2.putText(carDetection, f"Not available", (50, 50), fonts, 0.6, (255, 255, 255), 2)
 
         image_whole = cv2.addWeighted(carDetection, 1, line_frame, 1, 0)
+
         # formatiraj za prikaz u pretrazivacu
-        imgencode = cv2.imencode('.jpg', image_whole)[1]
-        strinData = imgencode.tostring()
-        yield (b'--frame\r\n'b'Content-Type: text/plain\r\n\r\n' + strinData + b'\r\n')
-
-        # cv2.imshow('car_detection', carDetection)
-
-        # cv2.imshow('line_frame', line_frame)
+        imgCode = cv2.imencode('.jpg', image_whole)[1]
+        stringData = imgCode.tostring()
+        yield b'--frame\r\n'b'Content-Type: text/plain\r\n\r\n' + stringData + b'\r\n'
 
         # print("SIGNAL ", signal)
         # global signal
-        if (signal == 1):
+        if signal == 1:
             # operations.insert(result)
             break
 
@@ -309,7 +274,6 @@ def startVideo():
 
 def stopAndSave():
     operations.insert(result)
-    # print("STOPIRANO")
     global signal
     signal = 1
     stream.stop()
