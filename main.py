@@ -191,6 +191,7 @@ def startVideo():
         # 505000
         # if(suma > 1000):
         #     pedestrians(frame_g, frame)
+        # PedestrianDetection(pedestrian_tracker, frame_g, frame).start()
 
         # ped.pedestrians(pedestrian_tracker, frame_g, frame)
 
