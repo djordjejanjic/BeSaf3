@@ -20,7 +20,6 @@ def index():
 @app.route('/results')
 def results():
     myCursor = instance.getAll()
-
     resultValue = myCursor.execute("SELECT * FROM results ORDER BY date DESC")
     if resultValue > 0:
         resultDetails = myCursor.fetchall()
