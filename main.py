@@ -35,6 +35,9 @@ def startVideo(db):
         carDet = CarThread(car_tracker, frame)
         carDetection = carDet.detectCars()
 
+        # StopSignThread(stop_tracker, frame, Globals.previous).start()
+        # PedestrianThread(pedestrian_tracker, frame).start()
+
         carDetectionWidth = Globals.car_width_global
 
         cv2.putText(carDetection, f"Result: {Globals.result}", (800, 50), Globals.fonts, 1.2, (0, 0, 255), 2)
