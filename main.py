@@ -3,6 +3,7 @@ import numpy as np
 import operations
 from streamthread import FileVideoStream
 from pedestriandetectionthread import PedestrianDetection
+
 # import signal as signal
 
 lineHitCounter = 0
@@ -163,7 +164,7 @@ def startVideo():
         theta = np.pi / 180  # ugao u radijanima
         threshold = 40  # min broj glasova
         min_line_len = 10  # min broj piksela za liniju
-        max_line_gap = 80  # maksimalni razmak izmedju linija 
+        max_line_gap = 80  # maksimalni razmak izmedju linija
         lines = cv2.HoughLinesP(masked_image, rho, theta, threshold, np.array([]), minLineLength=min_line_len,
                                 maxLineGap=max_line_gap)
 
@@ -241,7 +242,6 @@ def startVideo():
 
             if Distance < safe_distance:
                 if previous_distance != Distance:
-
                     previous_distance = Distance
                     cv2.putText(carDetection, "WARNING! SLOW DOWN!", (400, 650), fonts, 1.2, (0, 0, 255), 2)
                     blue = 230
