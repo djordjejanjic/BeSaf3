@@ -16,7 +16,7 @@ signal = 0
 previous = None
 
 stream = FileVideoStream('assets/test-vozilo.mp4').start()
-ped = PedestrianDetection()
+# ped = PedestrianDetection()
 
 def startVideo():
     # cap = cv2.VideoCapture('stop_test.mp4')
@@ -103,11 +103,11 @@ def startVideo():
             lineHitCounter = 1
             # signal.signal(lineHitCounter)
             result = result - 8
-            print("BLIZU LINIJE, SMANJUJEMO REZULTAT")
+            # print("BLIZU LINIJE, SMANJUJEMO REZULTAT")
         else:
             lineHitCounter = 0
             # signal.signal(lineHitCounter)
-        print(lineHitCounter)
+        # print(lineHitCounter)
 
         return masked_image
 
@@ -128,7 +128,7 @@ def startVideo():
             for (x, y, w, h) in stop:
                 cv2.rectangle(frame, (x, y), (x + w, y + h), (255, 0, 255), 2)
                 # signal.signal(1)
-                print("ZNAK STOP")
+                # print("ZNAK STOP")
                 global previous
                 if previous is not None:
                     diff = cv2.absdiff(previous, masked_image_stop)
@@ -143,7 +143,7 @@ def startVideo():
         # signal.signal(0)
 
     def pedestrians(frame_g, frame):
-        print("YOU CROSSED THE ZEBRA CROSSING")
+        # print("YOU CROSSED THE ZEBRA CROSSING")
         vertices = np.array([[(50, 720), (50, 300), (1200, 300), (1200, 720)]], dtype=np.int32)
         mask = np.zeros_like(frame_g)
         cv2.fillPoly(mask, vertices, 255)
@@ -154,7 +154,8 @@ def startVideo():
             for (x, y, w, h) in pedestrians:
                 cv2.rectangle(frame, (x, y), (x + w, y + h), (0, 255, 255), 2)
                 if pedestrians is not None:
-                    print("PEDESTRIAN NEAR ZEBRA CROSSING!!!")
+                    # print("PEDESTRIAN NEAR ZEBRA CROSSING!!!")
+                    continue
                     # signal.signal(1)
                 # else:
                 # signal.signal(0)
@@ -196,7 +197,7 @@ def startVideo():
         mask1 = lineHit(line_image)
 
         suma = np.sum(mask1)
-        print(suma)
+        # print(suma)
 
         # TODO - Create new threads for pedestrian and sign detection
 
@@ -250,7 +251,7 @@ def startVideo():
         global result
         result = result + 25
 
-        print(result)
+        # print(result)
 
         line_frame = lineDetector(frame)
         # lineDetector(frame)
@@ -268,7 +269,7 @@ def startVideo():
             DistanceInCM = round(Distance)
             cv2.putText(carDetection, f"Distance: {DistanceInCM} cm", (50, 50), fonts, 0.6, (255, 255, 255), 2)
 
-            print("distance", DistanceInCM)
+            # print("distance", DistanceInCM)
             if (Distance < safe_distance):
                 if (previous_distance != Distance):
                     previous_distance = Distance
@@ -291,7 +292,7 @@ def startVideo():
 
         # cv2.imshow('line_frame', line_frame)
 
-        print("SIGNAL ", signal)
+        # print("SIGNAL ", signal)
         # global signal
         if (signal == 1):
             # operations.insert(result)
@@ -308,7 +309,7 @@ def startVideo():
 
 def stopAndSave():
     operations.insert(result)
-    print("STOPIRANO")
+    # print("STOPIRANO")
     global signal
     signal = 1
     stream.stop()
