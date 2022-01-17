@@ -2,10 +2,12 @@ from flask import Flask, render_template, request
 from flask.helpers import url_for
 from flask.wrappers import Response
 from werkzeug.utils import redirect
-import operations
+from controller.db.operations import DBBroker
 import main
 
 app = Flask(__name__)
+
+instance = DBBroker()
 
 
 @app.route('/', methods=['GET', 'POST'])
@@ -15,7 +17,7 @@ def index():
 
 @app.route('/results')
 def results():
-    myCursor = operations.getAll()
+    myCursor = instance.getAll()
 
     resultValue = myCursor.execute("SELECT * FROM results ORDER BY date DESC")
     if resultValue > 0:
@@ -25,7 +27,7 @@ def results():
 
 @app.route('/results-sorted')
 def resultsSorted():
-    myCursor = operations.getAll()
+    myCursor = instance.getAll()
     resultValue = myCursor.execute("SELECT * FROM results ORDER BY result DESC")
     if resultValue > 0:
         resultDetails = myCursor.fetchall()
@@ -33,19 +35,19 @@ def resultsSorted():
 
 
 def gen():
-    return main.startVideo()
+    return main.startVideo(instance)
 
 
 @app.route('/delete/<string:id>', methods=['POST', 'GET'])
 def deleteResult(id):
-    operations.delete(id)
+    instance.delete(id)
     return redirect(url_for('results'))
 
 
 @app.route('/video', methods=['GET', 'POST'])
 def video():
     if request.method == 'POST':
-        main.stopAndSave()
+        main.stopAndSave(instance)
         print("IT STOPPED AND SAVED")
 
     return render_template('video.html')

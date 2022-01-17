@@ -1,21 +1,18 @@
 import cv2
 import numpy as np
-import operations
-from streamthread import FileVideoStream
-from pedestriandetectionthread import PedestrianDetection
-
+# from controller.controller import Controller
+# from controller.db.operations import DBBroker
 # import signal as signal
+from globals.globals import Globals
+from threads.streamthread import FileVideoStream
+from threads.pedestrian_detection import PedestrianThread
+from threads.stop_sign_detection import StopSignThread
 
-lineHitCounter = 0
-result = 0
-car_width_global = 0
-signal = 0
-previous = None
 
 stream = FileVideoStream('assets/test-vozilo.mp4').start()
 
 
-def startVideo():
+def startVideo(db):
     classifierCars = 'models/cars.xml'
     classifierPedestrian = 'models/pedestrian.xml'
     classifierStopSign = 'models/stopsign_classifier.xml'
@@ -52,10 +49,9 @@ def startVideo():
 
         cars = car_tracker.detectMultiScale(masked_image, minSize=(50, 50))
 
-        global car_width_global
         for (x, y, w, h) in cars:
             cv2.rectangle(frame, (x, y), (x + w, y + h), (0, 0, 255), 2)
-            car_width_global = w
+            Globals.car_width_global = w
 
         return frame
 
@@ -82,66 +78,16 @@ def startVideo():
         cv2.fillPoly(mask, vertices, 255)
         masked_image = cv2.bitwise_and(line_image, mask)
 
-        global lineHitCounter
-        global result
         if np.sum(masked_image) != 0:
-            lineHitCounter = 1
+            Globals.lineHitCounter = 1
             # signal.signal(lineHitCounter)
-            result = result - 8
+            Globals.result = Globals.result - 8
             # print("BLIZU LINIJE, SMANJUJEMO REZULTAT")
         else:
-            lineHitCounter = 0
+            Globals.lineHitCounter = 0
             # signal.signal(lineHitCounter)
 
         return masked_image
-
-    def stop(frame_g, frame):
-
-        vertices = np.array([[(860, 550), (860, 140), (1200, 140), (1200, 550)]], dtype=np.int32)
-        mask = np.zeros_like(frame_g)
-        cv2.fillPoly(mask, vertices, 255)
-        masked_image = cv2.bitwise_and(frame_g, mask)
-        stop = stop_tracker.detectMultiScale(masked_image)
-        # cv2.imshow("znaktest", masked_image)
-
-        vertices_stop = np.array([[(860, 400), (860, 140), (1200, 140), (1200, 400)]], dtype=np.int32)
-        mask_stop = np.zeros_like(frame_g)
-        cv2.fillPoly(mask_stop, vertices_stop, 255)
-        masked_image_stop = cv2.bitwise_and(frame_g, mask_stop)
-        if stop is not None:
-            for (x, y, w, h) in stop:
-                cv2.rectangle(frame, (x, y), (x + w, y + h), (255, 0, 255), 2)
-                # signal.signal(1)
-                # print("ZNAK STOP")
-                global previous
-                if previous is not None:
-                    diff = cv2.absdiff(previous, masked_image_stop)
-                    # cv2.imshow("diff", diff)
-                    if np.sum(diff) != 0:
-                        print("STOP!!!")
-                        # signal.signal(1)
-                    else:
-                        print("DRIVER HAS STOPPED!")
-                previous = masked_image_stop
-        # else:
-        # signal.signal(0)
-
-    def pedestrians(frame_g, frame):
-        # print("YOU CROSSED THE ZEBRA CROSSING")
-        vertices = np.array([[(50, 720), (50, 300), (1200, 300), (1200, 720)]], dtype=np.int32)
-        mask = np.zeros_like(frame_g)
-        cv2.fillPoly(mask, vertices, 255)
-        masked_image = cv2.bitwise_and(frame_g, mask)
-        pedestrians = pedestrian_tracker.detectMultiScale(masked_image)
-        if pedestrians is not None:
-            for (x, y, w, h) in pedestrians:
-                cv2.rectangle(frame, (x, y), (x + w, y + h), (0, 255, 255), 2)
-                if pedestrians is not None:
-                    # print("PEDESTRIAN NEAR ZEBRA CROSSING!!!")
-                    continue
-                    # signal.signal(1)
-                # else:
-                # signal.signal(0)
 
     def lineDetector(frame):
 
@@ -178,23 +124,18 @@ def startVideo():
                         cv2.line(line_image, (x1, y1), (x2, y2), [255, 0, 0], 20)
 
         mask1 = lineHit(line_image)
-
         suma = np.sum(mask1)
-        # print(suma)
 
         # TODO - Create new threads for pedestrian and sign detection
 
         # Detekcija stop znaka
 
-        # stop(frame_g, frame)
+        StopSignThread(stop_tracker, frame, Globals.previous).start()
 
         # Detekcija pesaka kod zebre
         # 505000
-        # if(suma > 1000):
-        #     pedestrians(frame_g, frame)
-        # PedestrianDetection(pedestrian_tracker, frame_g, frame).start()
-
-        # ped.pedestrians(pedestrian_tracker, frame_g, frame)
+        if suma > 25000:
+            PedestrianThread(pedestrian_tracker, frame).start()
 
         return line_image
 
@@ -225,15 +166,14 @@ def startVideo():
 
         frame = stream.read()
 
-        global result
-        result = result + 25
+        Globals.result = Globals.result + 25
 
         line_frame = lineDetector(frame)
         carDetection = detectCars(frame)
 
-        carDetectionWidth = car_width_global
+        carDetectionWidth = Globals.car_width_global
 
-        cv2.putText(carDetection, f"Result: {result}", (800, 50), fonts, 1.2, (0, 0, 255), 2)
+        cv2.putText(carDetection, f"Result: {Globals.result}", (800, 50), fonts, 1.2, (0, 0, 255), 2)
         if carDetectionWidth != 0:
 
             Distance = distanceFinder(foc, know_width, carDetectionWidth)
@@ -260,27 +200,26 @@ def startVideo():
 
         # print("SIGNAL ", signal)
         # global signal
-        if signal == 1:
+        if Globals.signal == 1:
             # operations.insert(result)
             break
 
         k = cv2.waitKey(30) & 0xff
         if k == 27:
-            operations.insert(result)
+            db.insert(result)
             break
 
         stream.stop()
         cv2.destroyAllWindows()
 
 
-def stopAndSave():
-    operations.insert(result)
-    global signal
-    signal = 1
+def stopAndSave(db):
+    db.insert(Globals.result)
+
+    Globals.signal = 1
     stream.stop()
     cv2.destroyAllWindows()
 
 
 def restart():
-    global signal
-    signal = 0
+    Globals.signal = 0
