@@ -1,14 +1,16 @@
 from db.operations import DBBroker
 
+instance = DBBroker()
+
 
 def insert(result):
-    DBBroker.insert(result)
+    instance.insert(result)
 
 
 def getAll():
-    myCursor = DBBroker.getAll()
+    myCursor = instance.getAll()
     return myCursor
 
 
 def delete(id):
-    DBBroker.delete(id)
+    instance.delete(id)
