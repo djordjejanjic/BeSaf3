@@ -10,6 +10,8 @@ app = Flask(__name__)
 instance = DBBroker()
 
 
+# TODO Login & Registration
+
 @app.route('/', methods=['GET', 'POST'])
 def index():
     return render_template('index.html')
