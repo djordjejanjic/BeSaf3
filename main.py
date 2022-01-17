@@ -1,8 +1,10 @@
 import cv2
 import numpy as np
-import operations
-from streamthread import FileVideoStream
-from pedestriandetectionthread import PedestrianDetection
+from controller.controller import Controller
+from threads.streamthread import FileVideoStream
+from threads.pedestrianthread import PedestrianThread
+from threads.stopsignthread import StopSignThread
+
 # import signal as signal
 
 lineHitCounter = 0
@@ -11,7 +13,8 @@ car_width_global = 0
 signal = 0
 previous = None
 
-stream = FileVideoStream('assets/test-vozilo.mp4').start()
+stream = FileVideoStream('assets/test-vozilo.mp4')
+stream.start()
 
 
 def startVideo():
@@ -163,7 +166,7 @@ def startVideo():
         theta = np.pi / 180  # ugao u radijanima
         threshold = 40  # min broj glasova
         min_line_len = 10  # min broj piksela za liniju
-        max_line_gap = 80  # maksimalni razmak izmedju linija 
+        max_line_gap = 80  # maksimalni razmak izmedju linija
         lines = cv2.HoughLinesP(masked_image, rho, theta, threshold, np.array([]), minLineLength=min_line_len,
                                 maxLineGap=max_line_gap)
 
@@ -186,14 +189,13 @@ def startVideo():
         # Detekcija stop znaka
 
         # stop(frame_g, frame)
+        global previous
+        StopSignThread(stop_tracker, frame, previous).start()
 
         # Detekcija pesaka kod zebre
         # 505000
-        # if(suma > 1000):
-        #     pedestrians(frame_g, frame)
-        # PedestrianDetection(pedestrian_tracker, frame_g, frame).start()
-
-        # ped.pedestrians(pedestrian_tracker, frame_g, frame)
+        if suma > 1000:
+            PedestrianThread(pedestrian_tracker, frame).start()
 
         return line_image
 
@@ -241,7 +243,6 @@ def startVideo():
 
             if Distance < safe_distance:
                 if previous_distance != Distance:
-
                     previous_distance = Distance
                     cv2.putText(carDetection, "WARNING! SLOW DOWN!", (400, 650), fonts, 1.2, (0, 0, 255), 2)
                     blue = 230
@@ -266,7 +267,7 @@ def startVideo():
 
         k = cv2.waitKey(30) & 0xff
         if k == 27:
-            operations.insert(result)
+            Controller.insert(result)
             break
 
         stream.stop()
@@ -274,7 +275,7 @@ def startVideo():
 
 
 def stopAndSave():
-    operations.insert(result)
+    Controller.insert(result)
     global signal
     signal = 1
     stream.stop()

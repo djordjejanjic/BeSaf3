@@ -2,8 +2,8 @@ from flask import Flask, render_template, request
 from flask.helpers import url_for
 from flask.wrappers import Response
 from werkzeug.utils import redirect
-import operations
-import main
+from controller.controller import Controller
+from main import Main
 
 app = Flask(__name__)
 
@@ -15,7 +15,7 @@ def index():
 
 @app.route('/results')
 def results():
-    myCursor = operations.getAll()
+    myCursor = Controller.getAll()
 
     resultValue = myCursor.execute("SELECT * FROM results ORDER BY date DESC")
     if resultValue > 0:
@@ -25,7 +25,7 @@ def results():
 
 @app.route('/results-sorted')
 def resultsSorted():
-    myCursor = operations.getAll()
+    myCursor = Controller.getAll()
     resultValue = myCursor.execute("SELECT * FROM results ORDER BY result DESC")
     if resultValue > 0:
         resultDetails = myCursor.fetchall()
@@ -33,19 +33,19 @@ def resultsSorted():
 
 
 def gen():
-    return main.startVideo()
+    return Main.startVideo()
 
 
 @app.route('/delete/<string:id>', methods=['POST', 'GET'])
 def deleteResult(id):
-    operations.delete(id)
+    Controller.delete(id)
     return redirect(url_for('results'))
 
 
 @app.route('/video', methods=['GET', 'POST'])
 def video():
     if request.method == 'POST':
-        main.stopAndSave()
+        Main.stopAndSave()
         print("IT STOPPED AND SAVED")
 
     return render_template('video.html')

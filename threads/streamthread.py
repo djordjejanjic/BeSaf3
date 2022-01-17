@@ -1,6 +1,7 @@
 from threading import Thread
 import cv2
 from queue import Queue
+from pedestrianthread import PedestrianThread
 
 
 class FileVideoStream:
@@ -22,6 +23,7 @@ class FileVideoStream:
 
             if not self.Q.full():
                 (grabbed, frame) = self.stream.read()
+
                 if not grabbed:
                     self.stop()
                     return
@@ -36,3 +38,6 @@ class FileVideoStream:
 
     def stop(self):
         self.stopped = True
+
+    def getQ(self):
+        return self.Q
