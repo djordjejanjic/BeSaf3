@@ -3,7 +3,7 @@ from db.operations import DBBroker
 
 class Controller:
     def __init__(self):
-        self.db = DBBroker
+        self.db = DBBroker()
 
     def insert(self, result):
         self.db.insert(result)

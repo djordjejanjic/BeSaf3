@@ -20,6 +20,7 @@ class DBBroker:
 
     def getAll(self):
         myCursor = self.conn.cursor()
+
         return myCursor
 
     def delete(self, id):
