@@ -22,3 +22,7 @@ class Globals:
     safe_distance = 800
     know_distance = 800  # centimetri
     know_width = 150
+
+    pedestrianRectangle = []
+    carRectangle = []
+    stopSignRectangle = []

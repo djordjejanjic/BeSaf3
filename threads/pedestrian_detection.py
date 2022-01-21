@@ -2,10 +2,16 @@ from threading import Thread
 import cv2
 import numpy as np
 
+from globals.globals import Globals
+
 
 class PedestrianThread:
 
     def __init__(self, pedestrian_tracker, frame):
+        self.x = None
+        self.y = None
+        self.w = None
+        self.h = None
         self.ped = pedestrian_tracker
         self.f = frame
         self.fg = cv2.cvtColor(self.f, cv2.COLOR_BGR2GRAY)
@@ -27,10 +33,14 @@ class PedestrianThread:
 
         if self.pedestrians is not None:
             for (x, y, w, h) in self.pedestrians:
-                cv2.rectangle(self.f, (x, y), (x + w, y + h), (0, 255, 255), 2)
-                if self.pedestrians is not None:
-                    # print("PEDESTRIAN NEAR ZEBRA CROSSING!!!")
-                    continue
-                    # signal.signal(1)
-                # else:
-                # signal.signal(0)
+                self.x = x
+                self.y = y
+                self.w = w
+                self.h = h
+                # cv2.rectangle(self.f, (x, y), (x + w, y + h), (0, 255, 255), 2)
+                # if self.pedestrians is not None:
+                #     # print("PEDESTRIAN NEAR ZEBRA CROSSING!!!")
+                #     continue
+                #     # signal.signal(1)
+                # # else:
+                # # signal.signal(0)

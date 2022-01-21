@@ -2,10 +2,16 @@ from threading import Thread
 import cv2
 import numpy as np
 
+from globals.globals import Globals
+
 
 class StopSignThread:
 
     def __init__(self, stop_sign_tracker, frame, previous):
+        self.x = None
+        self.y = None
+        self.w = None
+        self.h = None
         self.previous = previous
         self.stop_tracker = stop_sign_tracker
         self.f = frame
@@ -32,7 +38,11 @@ class StopSignThread:
     def update(self):
         if self.stop is not None:
             for (x, y, w, h) in self.stop:
-                cv2.rectangle(self.f, (x, y), (x + w, y + h), (255, 0, 255), 2)
+                # cv2.rectangle(self.f, (x, y), (x + w, y + h), (255, 0, 255), 2)
+                self.x = x
+                self.y = y
+                self.w = w
+                self.h = h
                 # signal.signal(1)
                 # print("ZNAK STOP")
 
