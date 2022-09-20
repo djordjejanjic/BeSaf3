@@ -57,7 +57,7 @@ def lineDetector(frame):
         for line in lines:
             if line is not None:
                 for x1, y1, x2, y2 in line:
-                    cv2.line(line_image, (x1, y1), (x2, y2), [255, 0, 0], 20)
+                    cv2.line(line_image, (x1, y1), (x2, y2), [150, 150, 0], 20)
 
     mask1 = lineHit(line_image)
     suma = np.sum(mask1)

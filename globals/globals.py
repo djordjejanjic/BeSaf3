@@ -2,7 +2,7 @@ import cv2
 
 
 class Globals:
-    path = 'assets/test-vozilo.mp4'
+    path = 'assets/test-znak.mp4'
     imagePath = 'assets/refimage1.png'
 
     lineHitCounter = 0
@@ -15,7 +15,7 @@ class Globals:
     classifierPedestrian = 'models/pedestrian.xml'
     classifierStopSign = 'models/stopsign_classifier.xml'
 
-    fonts = cv2.FONT_HERSHEY_COMPLEX
+    fonts = cv2.FONT_HERSHEY_SIMPLEX
 
     # Detektuje samo automobile isped i meri distancu
     previous_distance = 0

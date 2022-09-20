@@ -86,7 +86,10 @@ def startVideo(db):
         if len(indexes) > 0:
             for i in indexes.flatten():
                 x, y, w, h = boxes[i]
+                label = str(classes[class_ids[i]])
                 color = (0, 0, 139)
+                if label == 'person':
+                    color = (0, 139, 0)
                 cv2.rectangle(frame, (x, y), (x + w, y + h), color, 2)
 
         cv2.putText(frame, f"Result: {Globals.result}", (800, 50), Globals.fonts, 1.2, (0, 0, 255), 2)

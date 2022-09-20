@@ -24,7 +24,7 @@ class CarThread:
         cars = self.car_tracker.detectMultiScale(masked_image, minSize=(50, 50))
 
         for (x, y, w, h) in cars:
-            cv2.rectangle(self.frame, (x, y), (x + w, y + h), (0, 0, 255), 2)
+            # cv2.rectangle(self.frame, (x, y), (x + w, y + h), (0, 0, 255), 2)
             Globals.car_width_global = w
 
         return self.frame
