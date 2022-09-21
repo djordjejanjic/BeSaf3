@@ -10,7 +10,7 @@ from threads.streamthread import FileVideoStream
 from threads.car_detection import CarThread
 from threads.pedestrian_detection import PedestrianThread
 from threads.stop_sign_detection import StopSignThread
-
+import time
 # from signal import signal
 
 stream = FileVideoStream(Globals.path).start()
@@ -34,7 +34,15 @@ def startVideo(db):
     focal_length_found = focalLength(Globals.know_distance, Globals.know_width, ref_image_car_width)
     foc = focal_length_found[0][0][0]
 
-    while stream.more():
+    num_frames = 120
+
+    print("Capturing {0} frames".format(num_frames))
+
+    # Start time
+    start = time.time()
+
+    for i in range(0, num_frames):
+    # while stream.more():
 
         frame = stream.read()
 
@@ -116,6 +124,18 @@ def startVideo(db):
         imgCode = cv2.imencode('.jpg', image_whole)[1]
         stringData = imgCode.tostring()
         yield b'--frame\r\n'b'Content-Type: text/plain\r\n\r\n' + stringData + b'\r\n'
+
+        # End time
+        end = time.time()
+
+        # Time elapsed
+        seconds = end - start
+        print("Time taken : {0} seconds".format(seconds))
+
+        # Calculate frames per second
+        fps = num_frames / seconds
+
+        print("Estimated frames per second : {0}".format(fps))
 
         if Globals.signal == 1:
             # operations.insert(result)

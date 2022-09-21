@@ -21,38 +21,38 @@
     <title>BeSaf3</title>
 </head>
 
-<body>
+<body style="background: #275e8e">
 <div style="display: flex; margin:auto; text-align: center; margin-top: 30px; margin-bottom: 30px; align-items: center; justify-content:center;">
     <form action="/results">
-        <input class="btn btn-primary btn-sm" type="submit" value="Sort by latest" style="margin-right: 10px;"/>
+        <input type="submit" value="Sort by latest" style="display: block; font-size: 16px; margin-right: 10px; margin-bottom: 10px; border: none; border-radius: 10px; width: 140px; height: 40px"/>
     </form>
     <form action="/results-sorted">
-        <input class="btn btn-primary btn-sm" type="submit" value="Sort by largest"/>
+        <input type="submit" value="Sort by largest" style="display: block; font-size: 16px; margin: auto; margin-left: 10px; margin-bottom: 10px; border: none; border-radius: 10px; width: 140px; height: 40px"/>
     </form>
 
 </div>
 
 <table class="table">
     <thead>
-    <tr style="background-color: #275e8e; color:mintcream;">
-        <th scope="col" style="text-align: center;">Result</th>
-        <th scope="col" style="text-align: center;">Date</th>
-        <th scope="col" style="text-align: center;">Delete</th>
+    <tr style="background-color: white; color:mintcream;">
+        <th scope="col" style="text-align: center; color: #275e8e">Result</th>
+        <th scope="col" style="text-align: center; color: #275e8e">Date</th>
+        <th scope="col" style="text-align: center; color: #275e8e">Delete</th>
     </tr>
     </thead>
     <tbody style="text-align: center; font-weight: 700;">
     {% for res in resultDetails %}
-        <tr>
-            <td>{{ res[1] }}</td>
-            <td>{{ res[2] }}</td>
-            <td><a href="/delete/{{ res[0] }}" class="btn btn-primary btn-sm">Delete</a></td>
+        <tr style="background: gainsboro; padding: 100px">
+            <td style="color: #275e8e">{{ res[1] }}</td>
+            <td style="color: #275e8e">{{ res[2] }}</td>
+            <td><a href="/delete/{{ res[0] }}" style="background: white; color: #275e8e; padding: 10px;">Delete</a></td>
         </tr>
     {% endfor %}
     </tbody>
 </table>
 <form action="/">
-    <input class="btn btn-primary btn-lg" type="submit" value="Back"
-           style="display: block; margin: auto; margin-top:50px;"/>
+    <input type="submit" value="Back"
+           style="display: block; font-size: 16px; margin: auto; margin-bottom: 10px; border: none; border-radius: 10px; width: 140px; height: 40px"/>
 
 </form>
 <img src="/static/medium.png" style="display:block; margin:auto; margin-top: 50px;">

@@ -2,7 +2,7 @@ import cv2
 
 
 class Globals:
-    path = 'assets/test-znak.mp4'
+    path = 'assets/bg-video-2022-22.mp4'
     imagePath = 'assets/refimage1.png'
 
     lineHitCounter = 0

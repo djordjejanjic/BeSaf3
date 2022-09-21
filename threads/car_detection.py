@@ -16,15 +16,15 @@ class CarThread:
 
         # maskiranje
         # vertices = np.array([[(550,600),(550, 300), (750, 300), (750,600)]], dtype=np.int32)
-        vertices = np.array([[(520, 600), (550, 330), (750, 330), (780, 600)]], dtype=np.int32)
-        mask = np.zeros_like(frame_g)
-        cv2.fillPoly(mask, vertices, 255)
-        masked_image = cv2.bitwise_and(frame_g, mask)
+        # vertices = np.array([[(520, 800), (550, 330), (750, 330), (780, 800)]], dtype=np.int32)
+        # mask = np.zeros_like(frame_g)
+        # cv2.fillPoly(mask, vertices, 255)
+        # masked_image = cv2.bitwise_and(frame_g, mask)
 
-        cars = self.car_tracker.detectMultiScale(masked_image, minSize=(50, 50))
+        cars = self.car_tracker.detectMultiScale(frame_g, minSize=(100, 100))
 
         for (x, y, w, h) in cars:
-            # cv2.rectangle(self.frame, (x, y), (x + w, y + h), (0, 0, 255), 2)
+            cv2.rectangle(self.frame, (x, y), (x + w, y + h), (0, 255, 255), 1)
             Globals.car_width_global = w
 
         return self.frame

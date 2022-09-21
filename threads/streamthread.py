@@ -1,3 +1,4 @@
+import time
 from threading import Thread
 import cv2
 from queue import Queue
